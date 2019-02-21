@@ -5,6 +5,7 @@ try:
 except ImportError:
     from PySide.QtCore import *
     from PySide.QtGui import *
+import webbrowser
 
 
 class LinkDialog(QDialog):
@@ -32,6 +33,8 @@ class LinkDialog(QDialog):
 
 
 class TrelloSettingsUi(QGroupBox):
+    template_urls = {"assets": "https://trello.com/b/b1ErgFdB",
+                     "shots": "https://trello.com/b/vliQo2PD"}
     """
     Object which is put into the project tab of Prism settings
     to control Trello integration.
@@ -46,6 +49,19 @@ class TrelloSettingsUi(QGroupBox):
         self.toggled.connect(save_check)
         layout = QHBoxLayout(self)
         self.setLayout(layout)
+
+        def open_template(pipe):
+            def func(*args):
+                webbrowser.open_new_tab(self.template_urls[pipe])
+            return func
+        # shotcut to the template boards online
+        self.templates_button = QPushButton("Template Boards")
+        self.template_menu = QMenu(self)
+        self.template_menu.addAction("Assets (Board = Category)", open_template("assets"))
+        self.template_menu.addAction("Shots (Board = Sequence)", open_template("shots"))
+        self.templates_button.setMenu(self.template_menu)
+        layout.addWidget(self.templates_button)
+
         self.sync_down_button = QPushButton("Sync Trello -> Prism", self)
         self.sync_down_button.setToolTip("Get new data from Trello and create in Prism project.")
         layout.addWidget(self.sync_down_button)
