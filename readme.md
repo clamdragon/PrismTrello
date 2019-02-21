@@ -5,7 +5,8 @@ The marriage works because Trello functions well as a top-down and collaborative
 AKA Poor Man's Shotgun.
 
 To set up for your Prism project:
-Put the "Trello" folder in your Prism project's "Plugins" directory. Prism should detect and load it automatically.
+Put the "PrismTrello" folder in (or clone repo into) your Prism project's "Plugins" directory.
+Prism should detect and load it automatically.
 Enable it & sync to your Trello team in the Prism settings window.
 
 Categories/sequences synced from Prism to Trello create boards with certain necessary attributes.
