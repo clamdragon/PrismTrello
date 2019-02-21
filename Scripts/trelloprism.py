@@ -191,11 +191,24 @@ class TrelloHandler(object):
 
 
     def batch_get(self, queries):
+        """
+        Reject empty query list (edge case of a team with 0 boards)
+        :param queries: list of trello endpoints to be joined together into a batch request
+        :return: big ol' list of dicts, len(result) = len(queries) & queries[i] -> result[i]
+        then its response code is a key for accessing the json data from the endpoint
+        """
+        if not queries:
+            return []
         batch_url = "/batch?urls={}"
         return self.send("GET", batch_url.format(",".join(queries)))
 
 
     def get_board_data(self):
+        """
+        Batch get for ALL data on the Trello team at once. Batching majorly reduces HTTP traffic.
+        :return: large dict of Trello json info, massaged slightly so it's nested to have
+        board["lists"], list["cards"], card["customFieldItems"]
+        """
         boards = self.send("GET", "organizations/{}/boards".format(self.team_id))
         batch_paths = ["/board/{}/lists/open",
                       "/boards/{}/customFields",
