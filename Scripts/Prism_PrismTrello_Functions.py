@@ -88,7 +88,8 @@ class Prism_PrismTrello_Functions(object):
         """
         :return: (bool) whether or not this feature is enabled for the project
         """
-        return eval(self.core.getConfig("trello", "enabled", configPath=self.core.prismIni) or "False")
+        # return eval(self.core.getConfig("trello", "enabled", configPath=self.core.prismIni) or "False")
+        return "True"
 
 
     @err_decorator
@@ -340,8 +341,10 @@ class Prism_PrismTrello_Functions(object):
         """
         scene_dirs = scene_file.split(os.sep)
         publish_split = publish_file.split(os.sep)
-        project_steps = eval(self.core.getConfig(
-            "globals", "pipeline_steps", configPath=self.core.prismIni))
+        # project_steps = eval(self.core.getConfig(
+        #     "globals", "pipeline_steps", configPath=self.core.prismIni))
+        project_steps = self.core.getConfig(
+            "globals", "pipeline_steps", configPath=self.core.prismIni)
 
         data = {"author": self.core.username,
                 "plugin": self.core.appPlugin.pluginName,
@@ -405,7 +408,8 @@ class Prism_PrismTrello_Functions(object):
 
         data["version"] = config_items["version"]
         data["timestamp"] = config_items["creation date"]
-        data["dependencies"] = eval(config_items["dependencies"])
+        # data["dependencies"] = eval(config_items["dependencies"])
+        data["dependencies"] = config_items["dependencies"]
 
         return data
 
