@@ -131,12 +131,17 @@ class TrelloHandler(object):
         """
         url = "https://api.trello.com/1/{}".format(uri.lstrip("/"))
         req = self.session.prepare_request( requests.Request(method, url, **kwargs) )
+        print "KWARGS: "+str(kwargs.get("files"))
+        print "REQUEST: " + str(req)
 
         if not hasattr(ssl, "PROTOCOL_TLSv1_2"):
         # if True:
             # send as a cURL subprocess.
+            print "NO PROTOCOL"
             code, content = self.curl_send(method, req.url, kwargs.get("files"))
+            print "CONTENT: " + str(content)
         else:
+            print "HAVE PROTOCOL"
             r = self.session.send(req)
             code, content = r.status_code, r.content
 
@@ -164,17 +169,19 @@ class TrelloHandler(object):
             # requests takes files as name, binary string
             # but curl needs a filename - so make one
             name, bytestr = files["file"]
+            print "NAMEEE "+str(name)
             fn = os.path.join(gettempdir(), name)
             with open(fn, "wb") as of:
                 of.write(bytestr)
             curl_args = ["--form", "file=@{}".format(fn), "--url", url]
         else:
             fn = os.path.join(gettempdir(), "prism")
-            curl_args = ["--url", url]
+            curl_args = ["--form", "file=@{}".format(fn),"--url", url]
 
         # subprocess needs command as a list that is basically split along whitespace
         curl_args = ["curl", "-s", "-o", fn, "-w", "%{http_code}",
                      "--request", method] + curl_args
+        print "CURL ARGS: "+ str(curl_args)
 
         startupinfo = None
         if os.name == "nt":
@@ -290,7 +297,8 @@ class TrelloHandler(object):
         ap = self.core.getAssetPath()
         sp = self.core.getShotPath()
 
-        asset_paths = self.core.getAssetPaths()
+        # asset_paths = self.core.getAssetPaths()
+        asset_paths = self.core.getAssetPath()
         shot_paths = [sd for sd in os.listdir(sp) if os.path.isdir(os.path.join(sp, sd))]
         set_max_func(len(asset_paths) + len(shot_paths))
 
