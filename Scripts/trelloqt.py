@@ -44,7 +44,7 @@ class TrelloSettingsUi(QGroupBox):
         self.setCheckable(True)
         self.setTitle("Trello Integration")
         saved_state = core.getConfig("trello", "enabled", configPath=core.prismIni) or "False"
-        self.setChecked(eval(saved_state))
+        self.setChecked(saved_state)
         save_check = lambda s: core.setConfig("trello", "enabled", s, configPath=core.prismIni)
         self.toggled.connect(save_check)
         layout = QHBoxLayout(self)
