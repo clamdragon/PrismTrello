@@ -46,6 +46,13 @@ except ImportError:
     from PySide.QtCore import *
     from PySide.QtGui import *
 
+if sys.version[0] == "3":
+    pVersion = 3
+else:
+    pVersion = 2
+
+from PrismUtils.Decorators import err_catcher_plugin as err_catcher
+
 """
 Prism-facing side of Trello-Prism integration.
 This is the plugin object registered with Prism.
@@ -57,18 +64,18 @@ Connect to Trello using trelloprism module with its handler class.
 
 
 # this function catches any errors in this script and can be ignored
-def err_decorator(func):
-    @wraps(func)
-    def func_wrapper(*args, **kwargs):
-        exc_info = sys.exc_info()
-        try:
-            return func(*args, **kwargs)
-        except Exception as e:
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            erStr = ("%s ERROR - Prism_Plugin_Trello %s:\n%s\n\n%s" % (time.strftime("%d/%m/%y %X"), args[0].plugin.version, ''.join(traceback.format_stack()), traceback.format_exc()))
-            args[0].core.writeErrorLog(erStr)
+# def err_decorator(func):
+#     @wraps(func)
+#     def func_wrapper(*args, **kwargs):
+#         exc_info = sys.exc_info()
+#         try:
+#             return func(*args, **kwargs)
+#         except Exception as e:
+#             exc_type, exc_obj, exc_tb = sys.exc_info()
+#             erStr = ("%s ERROR - Prism_Plugin_Trello %s:\n%s\n\n%s" % (time.strftime("%d/%m/%y %X"), args[0].plugin.version, ''.join(traceback.format_stack()), traceback.format_exc()))
+#             args[0].core.writeErrorLog(erStr)
 
-    return func_wrapper
+#     return func_wrapper
 
 
 class Prism_PrismTrello_Functions(object):
@@ -79,7 +86,7 @@ class Prism_PrismTrello_Functions(object):
 
 
     # if returns true, the plugin will be loaded by Prism
-    @err_decorator
+    @err_catcher(name=__name__)
     def isActive(self):
         return True
 
@@ -92,7 +99,7 @@ class Prism_PrismTrello_Functions(object):
         return "True"
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def reload_handler(self):
         """
         Refresh the handler object and ensure connection.
@@ -103,7 +110,7 @@ class Prism_PrismTrello_Functions(object):
             QMessageBox(text="Trello connection rejected.\nCheck internet connection or Trello credentials.").exec_()
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def sync_down(self):
         """
         Dummy slot because UI can't be connected directly to handler.
@@ -122,7 +129,7 @@ class Prism_PrismTrello_Functions(object):
         QMessageBox(text="Sync complete.").exec_()
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def sync_up(self):
         """
         Slot to pass sync up call to handler.
@@ -142,7 +149,7 @@ class Prism_PrismTrello_Functions(object):
     # the following function are called by Prism at specific events, which are indicated by the function names
     # you can add your own code to any of these functions.
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def onProjectChanged(self, origin):
         # runs when opened for first time - this is ideal place to connect to Trello
         # and gdrive project structure - or maybe make a button in settings which does it?
@@ -156,17 +163,17 @@ class Prism_PrismTrello_Functions(object):
         self.reload_handler()
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def onProjectBrowserStartup(self, origin):
         pass
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def onProjectBrowserClose(self, origin):
         pass
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def onPrismSettingsOpen(self, origin):
         """
         Add a groupbox for Trello integration to the project page of settings
@@ -180,37 +187,37 @@ class Prism_PrismTrello_Functions(object):
         trello_widg.sync_up_button.clicked.connect(self.sync_up)
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def onPrismSettingsSave(self, origin):
         pass
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def onStateManagerOpen(self, origin):
         pass
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def onStateManagerClose(self, origin):
         pass
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def onSelectTaskOpen(self, origin):
         pass
 
 
-    @err_decorator
-    def onStateCreated(self, origin):
-        pass
+    # @err_catcher(name=__name__)
+    # def onStateCreated(self, origin):
+    #     pass
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def onStateDeleted(self, origin):
         pass
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def onPublish(self, origin):
         """
         Only happens ONCE per publish
@@ -220,42 +227,43 @@ class Prism_PrismTrello_Functions(object):
         self.reload_handler()
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def onSaveFile(self, origin, filepath):
         pass
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def onAssetDlgOpen(self, origin, assetDialog):
         pass
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def onAssetCreated(self, origin, assetName, assetPath, assetDialog=None):
-        pass
+
+        self.sync_up()
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def onShotCreated(self, origin, sequenceName, shotName):
         pass
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def preLoadEmptyScene(self, origin, *args):
         pass
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def postLoadEmptyScene(self, origin, *args):
         pass
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def preImport(self, *args, **kwargs):
         pass
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def postImport(self, *args, **kwargs):
         """
         Check if the imported asset needs REVIEW (art or tech). If so, opens the REVIEW popup.
@@ -266,40 +274,40 @@ class Prism_PrismTrello_Functions(object):
         pass
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def preExport(self, *args, **kwargs):
         pass
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def postExport(self, *args, **kwargs):
         # empty args, only kwargs
         self.publish_task_to_trello("Export", kwargs)
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def prePlayblast(self, *args, **kwargs):
         pass
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def postPlayblast(self, *args, **kwargs):
         # empty args, only kwargs
         self.publish_task_to_trello("Playblast", kwargs)
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def preRender(self, *args, **kwargs):
         pass
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def postRender(self, *args, **kwargs):
         # empty args, only kwargs
         self.publish_task_to_trello("Render", kwargs)
 
 
-    @err_decorator
+    @err_catcher(name=__name__)
     def publish_task_to_trello(self, task_type, task_data):
         """
         Respond to a publish and propogate the necessary change to Trello.
@@ -313,14 +321,14 @@ class Prism_PrismTrello_Functions(object):
 
         print("*************************************************************")
         scene_file = os.path.normpath(task_data["scenefile"])
-        publish_file = os.path.normpath(task_data["outputName"])
-        if publish_file.startswith(os.path.normpath(self.core.localProjectPath)):
-            # "Local Output", no Trello action to be taken
-            print("{}\nTHE PUBLISH IS MARKED AS LOCAL ONLY. NOT POSTED TO TRELLO.".format(publish_file))
-            return
+        publish_file = os.path.normpath(task_data["outputpath"])
+        # if publish_file.startswith(os.path.normpath(self.core.localProjectPath)):
+        #     # "Local Output", no Trello action to be taken
+        #     print("{}\nTHE PUBLISH IS MARKED AS LOCAL ONLY. NOT POSTED TO TRELLO.".format(publish_file))
+        #     return
 
         data = self.get_publish_data(scene_file, publish_file, task_type)
-        data["start_frame"], data["end_frame"] = task_data["startFrame"], task_data["endFrame"]
+        data["start_frame"], data["end_frame"] = task_data["startframe"], task_data["endframe"]
         data["attach"], data["attach_type"] = self.get_publish_attachment(data)
         try:
             self.trello_handler.publish_to_card(data)
@@ -356,19 +364,19 @@ class Prism_PrismTrello_Functions(object):
             base_path = os.path.sep.join(publish_split[:-5])
             data["entity"] = publish_split[-6]
             data["task"] = publish_split[-4]
-            vinfo_path = os.path.normpath(os.path.join(publish_file, "..", "..", "versioninfo.ini"))
+            vinfo_path = os.path.normpath(os.path.join(publish_file, "..", "..", "versioninfo.yml"))
         elif task_type == "Playblast":
             # base_path = os.path.join(*publish_split[:-4])
             base_path = os.path.sep.join(publish_split[:-4])
             data["entity"] = publish_split[-5]
             data["task"] = publish_split[-3]
-            vinfo_path = os.path.normpath(os.path.join(publish_file, "..", "versioninfo.ini"))
+            vinfo_path = os.path.normpath(os.path.join(publish_file, "..", "versioninfo.yml"))
         elif task_type == "Render":
             # base_path = os.path.join(*publish_split[:-6])
             base_path = os.path.sep.join(publish_split[:-6])
             data["entity"] = publish_split[-7]
             data["task"] = publish_split[-4]
-            vinfo_path = os.path.normpath(os.path.join(publish_file, "..", "..", "versioninfo.ini"))
+            vinfo_path = os.path.normpath(os.path.join(publish_file, "..", "..", "versioninfo.yml"))
             # correct task_type - make more specific
             task_type = next(t for t, subpath in self.trello_handler.task_paths.items()
                              if subpath in publish_file)
@@ -404,12 +412,13 @@ class Prism_PrismTrello_Functions(object):
         # get some stuff from version .ini
         task_subpath = self.trello_handler.task_paths[data["type"]]
         data["task_path"] = os.path.join(base_path, task_subpath, data["task"])
-        config_items = dict(self.core.getConfig(configPath=vinfo_path, getItems=True, cat="information"))
+        # config_items = dict(self.core.getConfig(configPath=vinfo_path, getItems=True, cat="information"))
+        config_items = dict(self.core.getConfig(configPath=vinfo_path, cat="information"))
 
-        data["version"] = config_items["version"]
-        data["timestamp"] = config_items["creation date"]
+        data["version"] = config_items["Version"]
+        data["timestamp"] = config_items["Creation date"]
         # data["dependencies"] = eval(config_items["dependencies"])
-        data["dependencies"] = config_items["dependencies"]
+        # data["dependencies"] = config_items["Dependencies"]
 
         return data
 
