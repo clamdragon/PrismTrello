@@ -96,7 +96,9 @@ class Prism_PrismTrello_Functions(object):
         :return: (bool) whether or not this feature is enabled for the project
         """
         # return eval(self.core.getConfig("trello", "enabled", configPath=self.core.prismIni) or "False")
-        return "True"
+        check = self.core.getConfig("trello", "enabled", configPath=self.core.prismIni)
+        print("TRELLO INTEGRATION : {}. - Change it on Prism Project Settings.".format(check))
+        return check
 
 
     @err_catcher(name=__name__)
@@ -239,8 +241,7 @@ class Prism_PrismTrello_Functions(object):
 
     @err_catcher(name=__name__)
     def onAssetCreated(self, origin, assetName, assetPath, assetDialog=None):
-
-        self.sync_up()
+        pass
 
 
     @err_catcher(name=__name__)
@@ -418,7 +419,8 @@ class Prism_PrismTrello_Functions(object):
         data["version"] = config_items["Version"]
         data["timestamp"] = config_items["Creation date"]
         # data["dependencies"] = eval(config_items["dependencies"])
-        # data["dependencies"] = config_items["Dependencies"]
+        if "Dependencies" in config_items:
+            data["dependencies"] = config_items["Dependencies"]
 
         return data
 
