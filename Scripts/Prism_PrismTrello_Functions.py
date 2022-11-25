@@ -63,21 +63,6 @@ Connect to Trello using trelloprism module with its handler class.
 # TODO: ADD "VIEW ON TRELLO" TO RIGHT CLICK MENUS
 
 
-# this function catches any errors in this script and can be ignored
-# def err_decorator(func):
-#     @wraps(func)
-#     def func_wrapper(*args, **kwargs):
-#         exc_info = sys.exc_info()
-#         try:
-#             return func(*args, **kwargs)
-#         except Exception as e:
-#             exc_type, exc_obj, exc_tb = sys.exc_info()
-#             erStr = ("%s ERROR - Prism_Plugin_Trello %s:\n%s\n\n%s" % (time.strftime("%d/%m/%y %X"), args[0].plugin.version, ''.join(traceback.format_stack()), traceback.format_exc()))
-#             args[0].core.writeErrorLog(erStr)
-
-#     return func_wrapper
-
-
 class Prism_PrismTrello_Functions(object):
     def __init__(self, core, plugin):
         self.core = core
@@ -323,10 +308,12 @@ class Prism_PrismTrello_Functions(object):
         print("*************************************************************")
         scene_file = os.path.normpath(task_data["scenefile"])
         publish_file = os.path.normpath(task_data["outputpath"])
-        # if publish_file.startswith(os.path.normpath(self.core.localProjectPath)):
-        #     # "Local Output", no Trello action to be taken
-        #     print("{}\nTHE PUBLISH IS MARKED AS LOCAL ONLY. NOT POSTED TO TRELLO.".format(publish_file))
-        #     return
+        localEnabled = self.core.getConfig(
+            "globals", "uselocalfiles", configPath=self.core.prismIni)
+        if localEnabled and publish_file.startswith(os.path.normpath(self.core.localProjectPath)):
+            # "Local Output", no Trello action to be taken
+            print("{}\nTHE PUBLISH IS MARKED AS LOCAL ONLY. NOT POSTED TO TRELLO.".format(publish_file))
+            return
 
         data = self.get_publish_data(scene_file, publish_file, task_type)
         data["start_frame"], data["end_frame"] = task_data["startframe"], task_data["endframe"]
@@ -398,7 +385,7 @@ class Prism_PrismTrello_Functions(object):
         if publish_file.startswith(ap):
             # Asset
             data["pipe"] = "assets"
-            data["step"] = project_steps[scene_dirs[-2]]
+            data["step"] = project_steps[scene_dirs[-3]]
             data["entity"] = entity
             # data["category"] = os.path.basename(os.path.dirname(base_path))
             data["category"] = os.path.relpath(os.path.dirname(base_path), ap).replace(os.path.sep, "/")
