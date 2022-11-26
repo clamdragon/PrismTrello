@@ -290,7 +290,8 @@ class TrelloHandler(object):
         ap = self.core.getAssetPath()
         sp = self.core.getShotPath()
 
-        asset_paths = self.core.getAssetPaths()
+        # asset_paths = self.core.getAssetPaths()
+        asset_paths = self.core.getEntityPath()
         shot_paths = [sd for sd in os.listdir(sp) if os.path.isdir(os.path.join(sp, sd))]
         set_max_func(len(asset_paths) + len(shot_paths))
 
